@@ -10,5 +10,8 @@ class Job(BaseModel):
     brand: str
     issue_description: str
     status: str = "RECEIVED"
-    assigned_technician: Optional[str] = None
-    created_at: datetime
+    assigned_technician_id: Optional[str] = None
+    qr_code: Optional[str] = None
+    created_at: datetime = datetime.utcnow()
+    completed_at: Optional[datetime] = None
+    delivered_at: Optional[datetime] = None
