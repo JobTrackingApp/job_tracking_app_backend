@@ -1,4 +1,4 @@
-from pydantic import BaseModel
+from pydantic import BaseModel, Field
 from datetime import datetime
 from typing import Optional
 
@@ -10,5 +10,5 @@ class Customer(BaseModel):
     address: Optional[str] = None
     company_name: Optional[str] = None
     notes: Optional[str] = None
-    created_at: datetime = datetime.utcnow()
-    updated_at: datetime = datetime.utcnow()
+    created_at: datetime = Field(default_factory=datetime.utcnow)
+    updated_at: datetime = Field(default_factory=datetime.utcnow)

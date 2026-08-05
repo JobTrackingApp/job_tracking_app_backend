@@ -1,9 +1,9 @@
-from pydantic import BaseModel
+from pydantic import BaseModel, Field
 from datetime import datetime
 from typing import Optional
 
 class Job(BaseModel):
-    job_number: int
+    job_id: int
     customer_name: str
     customer_phone: str
     item_type: str
@@ -12,6 +12,6 @@ class Job(BaseModel):
     status: str = "RECEIVED"
     assigned_technician_id: Optional[str] = None
     qr_code: Optional[str] = None
-    created_at: datetime = datetime.utcnow()
+    created_at: datetime = Field(default_factory=datetime.utcnow)
     completed_at: Optional[datetime] = None
     delivered_at: Optional[datetime] = None

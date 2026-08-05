@@ -1,4 +1,4 @@
-from pydantic import BaseModel, EmailStr
+from pydantic import BaseModel, EmailStr, Field
 from datetime import datetime
 from enum import Enum
 from typing import Optional
@@ -15,5 +15,5 @@ class User(BaseModel):
     role: UserRole
     is_active: bool = True
     firebase_uid: Optional[str] = None
-    created_at: datetime = datetime.utcnow()
-    updated_at: datetime = datetime.utcnow()
+    created_at: datetime = Field(default_factory=datetime.utcnow)
+    updated_at: datetime = Field(default_factory=datetime.utcnow)
