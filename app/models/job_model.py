@@ -4,8 +4,7 @@ from typing import Optional
 
 class Job(BaseModel):
     job_id: int
-    customer_name: str
-    customer_phone: str
+    customer_id: str
     item_type: str
     brand: str
     issue_description: str

@@ -2,8 +2,25 @@ from pydantic import BaseModel, Field
 from datetime import datetime
 from typing import Optional
 
+class CustomerCreate(BaseModel):
+    name: str
+    phone: str
+    email: Optional[str] = None
+    address: Optional[str] = None
+    company_name: Optional[str] = None
+    notes: Optional[str] = None
 
+
+class CustomerUpdate(BaseModel):
+    name: Optional[str] = None
+    phone: Optional[str] = None
+    email: Optional[str] = None
+    address: Optional[str] = None
+    company_name: Optional[str] = None
+    notes: Optional[str] = None
+    
 class Customer(BaseModel):
+    customer_id: str
     name: str
     phone: str
     email: Optional[str] = None
