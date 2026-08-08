@@ -51,7 +51,7 @@ async def get_customer(customer_id: str):
 
     if not customer:
         raise HTTPException(
-            status_code=400,
+            status_code=404,
             detail="Customer not found"
         )
     
@@ -91,4 +91,3 @@ async def update_customer(customer_id: str,customer: CustomerUpdate):
     return updated_customer
 
 
-#
