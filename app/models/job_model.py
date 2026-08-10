@@ -23,6 +23,6 @@ class Job(BaseModel):
     assigned_technician_id: Optional[str] = None
     qr_code: Optional[str] = None
     created_at: datetime = Field(default_factory=datetime.utcnow)
-    # update_at: 
+    updated_at: datetime = Field(default_factory=datetime.utcnow)
     completed_at: Optional[datetime] = None
     delivered_at: Optional[datetime] = None

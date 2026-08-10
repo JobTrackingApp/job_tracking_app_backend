@@ -89,5 +89,3 @@ async def update_customer(customer_id: str,customer: CustomerUpdate):
     )
 
     return updated_customer
-
-

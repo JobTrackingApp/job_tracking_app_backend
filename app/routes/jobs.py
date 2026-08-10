@@ -59,6 +59,7 @@ async def get_job(job_id: str):
 #Update job details
 @router.patch("/job_id", response_model=Job)
 async def update_job(job_id: str, job: UpdateJob):
+
     update_data = {
         key: value
         for key, value in job.model_dump().items()
@@ -70,20 +71,20 @@ async def update_job(job_id: str, job: UpdateJob):
             status_code=400,
             detail="Failed to update job"
         )
-    
-    update_data["updated_at"] =datetime.utcnow()
+
+    update_data["updated_at"] = datetime.utcnow()
 
     result = await jobs_collection.update_one(
         {"job_id": job_id},
         {"$set": update_data}
     )
 
-    if result.matched_count==0:
+    if result.matched_count == 0:
         raise HTTPException(
             status_code=404,
             detail="Job not found"
         )
-    
+
     updated_job = await jobs_collection.find_one(
         {"job_id": job_id}
     )
