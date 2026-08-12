@@ -21,7 +21,7 @@ class Job(BaseModel):
     issue_description: str
     status: str = "RECEIVED"
     assigned_technician_id: Optional[str] = None
-    qr_code: Optional[str] = None
+    qr_token: Optional[str] = None
     created_at: datetime = Field(default_factory=datetime.utcnow)
     updated_at: datetime = Field(default_factory=datetime.utcnow)
     completed_at: Optional[datetime] = None

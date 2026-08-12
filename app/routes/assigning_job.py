@@ -59,3 +59,40 @@ async def assign_technician(job_id :str, assignment: AssignTechnician):
     )
 
     return updated_job
+
+@router.patch("/unassign")
+async def unassign_technician(job_id: str):
+
+    job = await jobs_collection.find_one(
+        {"job_id": job_id}
+    )
+
+    if not job:
+        raise HTTPException(
+            status_code=404,
+            detail="Job not found"
+        )
+    
+    if not job.get("assigned_technician_id"):
+        raise HTTPException(
+            status_code=404,
+            detail="No technician is currently assigned"
+        )
+    
+    await jobs_collection.find_one(
+        {"job_id": job_id},
+        {
+            "$set" : {
+                "assigned_technician_id": None,
+                "updated_at": datetime.utcnow
+            }
+        }
+    )
+
+    updated_job = await jobs_collection.find_one(
+        {"job_id": job_id}
+    )
+
+    return updated_job
+    
+
