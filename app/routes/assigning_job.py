@@ -16,21 +16,24 @@ async def assign_technician(job_id :str, assignment: AssignTechnician):
         {"job_id": job_id}
     )
 
-    if not job_id:
+    if not job:
         raise HTTPException(
             status_code=404,
             detail="Job not found"
         )
+    print("----------",job_id)
     
     #Check technician exists
-    technician = await jobs_collection.find_one(
+    technician = await users_collection.find_one(
         {
             "firebase_uid": assignment.technician_id,
             "role": "TECHNICIAN",
             "is_active": True
         }
     )
-
+    print( "firebase_uid", assignment.technician_id)
+    print(technician)
+        
     if not technician:
         raise HTTPException(
             status_code=404,

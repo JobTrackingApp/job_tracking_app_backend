@@ -24,3 +24,9 @@ customers_collection = db["customers"]
 jobs_collection = db["jobs"]
 
 job_status_history_collection = db["job_status_history"]
+
+job_charges_collection = db["job_charges"]
+
+financial_transactions_collection = db[
+    "financial_transactions"
+]
