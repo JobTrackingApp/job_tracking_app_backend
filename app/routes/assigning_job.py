@@ -2,6 +2,7 @@ from datetime import datetime
 from fastapi import APIRouter, HTTPException
 from app.models.assignment_model import AssignTechnician
 from app.core.database import jobs_collection, users_collection
+from app.core.utils import serialize_document
 
 router = APIRouter(
     prefix="/jobs",
@@ -26,7 +27,7 @@ async def assign_technician(job_id :str, assignment: AssignTechnician):
     #Check technician exists
     technician = await users_collection.find_one(
         {
-            "firebase_uid": assignment.technician_id,
+            "user_id": assignment.technician_id,
             "role": "TECHNICIAN",
             "is_active": True
         }
@@ -61,7 +62,7 @@ async def assign_technician(job_id :str, assignment: AssignTechnician):
         {"job_id": job_id}
     )
 
-    return updated_job
+    return serialize_document(updated_job)
 
 @router.patch("/unassign")
 async def unassign_technician(job_id: str):
