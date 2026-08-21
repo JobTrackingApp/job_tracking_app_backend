@@ -5,6 +5,8 @@ from fastapi import APIRouter, HTTPException
 
 from app.core.database import jobs_collection
 from app.models.qr_model import QRCodeResponse
+from app.models.job_model import Job
+from app.core.utils import serialize_document
 
 router = APIRouter(
     prefix="/jobs",
@@ -55,17 +57,15 @@ async def generate_qr(job_id: str):
         "qr_token": qr_token
     }
 
-@router.get("/qr")
+@router.get("/qr/{qr_token}")
 async def get_job_by_qr(qr_token: str):
-
     job = await jobs_collection.find_one(
         {"qr_token": qr_token}
     )
-
     if not job:
         raise HTTPException(
             status_code=404,
             detail="Invalid QR code"
         )
 
-    return job
+    return serialize_document(job)

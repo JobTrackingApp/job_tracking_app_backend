@@ -1,6 +1,7 @@
 from datetime import datetime
 
 from fastapi import APIRouter, HTTPException
+from app.core.utils import serialize_document
 
 from app.core.database import (
     jobs_collection,
@@ -85,7 +86,7 @@ async def create_job_charges(
         charge_data
     )
 
-    return charge_data
+    return serialize_document(charge_data)
 
 @router.get("/charges")
 async def get_job_charges(job_id: str):

@@ -71,6 +71,8 @@ async def unassign_technician(job_id: str):
         {"job_id": job_id}
     )
 
+    print("job_id", job_id)
+
     if not job:
         raise HTTPException(
             status_code=404,
@@ -83,12 +85,12 @@ async def unassign_technician(job_id: str):
             detail="No technician is currently assigned"
         )
     
-    await jobs_collection.find_one(
+    await jobs_collection.update_one(
         {"job_id": job_id},
         {
             "$set" : {
                 "assigned_technician_id": None,
-                "updated_at": datetime.utcnow
+                "updated_at": datetime.utcnow()
             }
         }
     )
@@ -97,6 +99,6 @@ async def unassign_technician(job_id: str):
         {"job_id": job_id}
     )
 
-    return updated_job
+    return serialize_document(updated_job)
     
 

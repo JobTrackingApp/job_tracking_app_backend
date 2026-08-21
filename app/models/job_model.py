@@ -12,6 +12,7 @@ class UpdateJob(BaseModel):
     item_type: Optional[str] = None
     brand: Optional[str] = None
     issue_description: Optional[str] = None
+    status: str = "RECEIVED"
 
 class Job(BaseModel):
     job_id: str
