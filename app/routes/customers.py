@@ -1,6 +1,7 @@
 from datetime import datetime
 from fastapi import APIRouter, HTTPException
-
+from fastapi import Depends
+from app.dependencies.auth import require_roles
 from app.models.customer_model import Customer, CustomerCreate, CustomerUpdate
 from app.core.database import customers_collection
 
@@ -11,7 +12,10 @@ router = APIRouter(
 
 #Create a customer
 @router.post("/", response_model=Customer)
-async def create_customer(customer: CustomerCreate):
+async def create_customer(
+    customer: CustomerCreate, 
+    current_user=Depends(require_roles("ADMIN", "RECEPTION"))):
+
     #Generate customer id
     last_customer = await customers_collection.find_one(
         sort=[("customer_id", -1)])
@@ -37,16 +41,29 @@ async def create_customer(customer: CustomerCreate):
 
 #Get the list of customers
 @router.get("/", response_model=list[Customer])
-async def get_customers():
-    customers = await customers_collection.find().to_list(length=None)
+async def get_customers(
+        current_user=Depends(
+        require_roles("ADMIN", "RECEPTION", "TECHNICIAN")
+    )
+):
+    customers = await customers_collection.find(
+        {},
+        {"_id": 0}
+    ).to_list(length=None)
 
     return customers
 
 #Get customer by customer id
 @router.get("/{customer_id}", response_model=Customer)
-async def get_customer(customer_id: str):
+async def get_customer(
+    customer_id: str,
+    current_user=Depends(
+        require_roles("ADMIN", "RECEPTION", "TECHNICIAN")
+    )
+):
     customer = await customers_collection.find_one(
-        {"customer_id": customer_id}
+        {"customer_id": customer_id},
+        {"_id": 0}
     )
 
     if not customer:
@@ -59,7 +76,13 @@ async def get_customer(customer_id: str):
 
 #Update customer info
 @router.patch("/customer_id", response_model=Customer)
-async def update_customer(customer_id: str,customer: CustomerUpdate):
+async def update_customer(
+    customer_id: str,
+    customer: CustomerUpdate,
+        current_user=Depends(
+        require_roles("ADMIN", "RECEPTION")
+    )):
+    
     update_data = {
         key: value
         for key, value in customer.model_dump().items()
@@ -85,7 +108,8 @@ async def update_customer(customer_id: str,customer: CustomerUpdate):
         )
     
     updated_customer = await customers_collection.find_one(
-        {"customer_id": customer_id}
+        {"customer_id": customer_id},
+        # {"_id": 0}
     )
 
     return updated_customer

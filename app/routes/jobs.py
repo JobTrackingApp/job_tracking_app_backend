@@ -1,8 +1,9 @@
 from datetime import datetime
-from fastapi import APIRouter, HTTPException
+from fastapi import APIRouter, HTTPException, Depends
 
 from app.models.job_model import CreateJob, UpdateJob, Job
 from app.core.database import jobs_collection
+from app.dependencies.auth import require_roles
 
 router = APIRouter(
     prefix = "/jobs",
@@ -11,7 +12,11 @@ router = APIRouter(
 
 #Create job
 @router.post("/", response_model=Job)
-async def create_job(job: CreateJob):
+async def create_job(
+    job: CreateJob,
+    current_user=Depends(
+        require_roles("ADMIN", "RECEPTION")
+    )):
     last_job = await jobs_collection.find_one(
         sort=[("job_id", -1)])
     
@@ -36,14 +41,23 @@ async def create_job(job: CreateJob):
 
 #Get all jobs
 @router.get("/", response_model=list[Job])
-async def get_jobs():
+async def get_jobs(
+        current_user=Depends(
+        require_roles("ADMIN", "RECEPTION", "TECHNICIAN")
+    )
+):
     jobs = await jobs_collection.find().to_list(length=None)
 
     return jobs
 
 #Get job by job id
 @router.get("/{job_id}", response_model=Job)
-async def get_job(job_id: str):
+async def get_job(
+    job_id: str,
+        current_user=Depends(
+        require_roles("ADMIN", "RECEPTION", "TECHNICIAN")
+    )):
+
     job = await jobs_collection.find_one(
         {"job_id": job_id}
     )
@@ -56,9 +70,14 @@ async def get_job(job_id: str):
     
     return job
 
-#Update job details
+#Update job details / update job status
 @router.patch("/job_id", response_model=Job)
-async def update_job(job_id: str, job: UpdateJob):
+async def update_job(
+    job_id: str, 
+    job: UpdateJob,    
+    current_user=Depends(
+        require_roles("ADMIN", "RECEPTION", "TECHNICIAN")
+    )):
 
     update_data = {
         key: value

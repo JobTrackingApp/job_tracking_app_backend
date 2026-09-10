@@ -1,7 +1,8 @@
 from datetime import datetime
 
-from fastapi import APIRouter, HTTPException
+from fastapi import APIRouter, HTTPException, Depends
 from app.core.utils import serialize_document
+from app.dependencies.auth import require_roles
 
 from app.core.database import (
     jobs_collection,
@@ -23,7 +24,10 @@ router = APIRouter(
 @router.post("/charges")
 async def create_job_charges(
     job_id: str,
-    charges: CreateJobCharges
+    charges: CreateJobCharges,
+    current_user=Depends(
+        require_roles("ADMIN", "RECEPTION", "TECHNICIAN")
+    )
 ):
 
     # Check job exists
@@ -89,7 +93,11 @@ async def create_job_charges(
     return serialize_document(charge_data)
 
 @router.get("/charges")
-async def get_job_charges(job_id: str):
+async def get_job_charges(
+    job_id: str,
+    current_user=Depends(
+        require_roles("ADMIN", "RECEPTION", "TECHNICIAN")
+    )):
 
     charges = await job_charges_collection.find_one(
         {"job_id": job_id}
@@ -106,7 +114,10 @@ async def get_job_charges(job_id: str):
 @router.patch("/charges")
 async def update_job_charges(
     job_id: str,
-    charges: UpdateJobCharges
+    charges: UpdateJobCharges,
+    current_user=Depends(
+        require_roles("ADMIN", "RECEPTION")
+    )
 ):
 
     existing = await job_charges_collection.find_one(

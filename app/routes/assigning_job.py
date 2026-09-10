@@ -1,8 +1,9 @@
 from datetime import datetime
-from fastapi import APIRouter, HTTPException
+from fastapi import APIRouter, HTTPException, Depends
 from app.models.assignment_model import AssignTechnician
 from app.core.database import jobs_collection, users_collection
 from app.core.utils import serialize_document
+from app.dependencies.auth import require_roles
 
 router = APIRouter(
     prefix="/jobs",
@@ -10,7 +11,12 @@ router = APIRouter(
 )
 
 @router.patch('/assign')
-async def assign_technician(job_id :str, assignment: AssignTechnician):
+async def assign_technician(
+    job_id :str, 
+    assignment: AssignTechnician,     
+    current_user=Depends(
+        require_roles("ADMIN", "RECEPTION")
+    )):
 
     #Check whether the job exist
     job = await jobs_collection.find_one(
@@ -65,7 +71,11 @@ async def assign_technician(job_id :str, assignment: AssignTechnician):
     return serialize_document(updated_job)
 
 @router.patch("/unassign")
-async def unassign_technician(job_id: str):
+async def unassign_technician(
+    job_id: str,
+    current_user=Depends(
+        require_roles("ADMIN", "RECEPTION")
+    )):
 
     job = await jobs_collection.find_one(
         {"job_id": job_id}

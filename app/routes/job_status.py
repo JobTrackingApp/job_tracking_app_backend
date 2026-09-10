@@ -1,7 +1,8 @@
 from datetime import datetime
-from fastapi import APIRouter, HTTPException
+from fastapi import APIRouter, HTTPException, Depends
 
 from app.core.database import jobs_collection, job_status_history_collection
+from app.dependencies.auth import require_roles
 
 router = APIRouter(
     prefix="/jobs",
@@ -10,7 +11,11 @@ router = APIRouter(
 
 #Updating job status
 @router.get("/status-history")
-async def get_status_history(job_id: str):
+async def get_status_history(
+    job_id: str,
+    current_user=Depends(
+        require_roles("ADMIN", "RECEPTION", "TECHNICIAN")
+    )):
     job = await jobs_collection.find_one(
         {"job_id": job_id}
     )

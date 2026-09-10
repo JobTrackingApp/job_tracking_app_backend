@@ -1,12 +1,13 @@
 import secrets
 
 from datetime import datetime
-from fastapi import APIRouter, HTTPException
+from fastapi import APIRouter, HTTPException, Depends
 
 from app.core.database import jobs_collection
 from app.models.qr_model import QRCodeResponse
-from app.models.job_model import Job
+# from app.models.job_model import Job
 from app.core.utils import serialize_document
+from app.dependencies.auth import require_roles
 
 router = APIRouter(
     prefix="/jobs",
@@ -14,7 +15,12 @@ router = APIRouter(
 )
 
 @router.post("/qr", response_model=QRCodeResponse)
-async def generate_qr(job_id: str):
+async def generate_qr(
+    job_id: str,
+    current_user=Depends(
+        require_roles("ADMIN", "RECEPTION")
+    )):
+
     job = await jobs_collection.find_one(
         {"job_id": job_id}
     )
@@ -58,7 +64,12 @@ async def generate_qr(job_id: str):
     }
 
 @router.get("/qr/{qr_token}")
-async def get_job_by_qr(qr_token: str):
+async def get_job_by_qr(
+    qr_token: str,
+    current_user=Depends(
+        require_roles("ADMIN", "RECEPTION", "TECHNICIAN")
+    )):
+    
     job = await jobs_collection.find_one(
         {"qr_token": qr_token}
     )

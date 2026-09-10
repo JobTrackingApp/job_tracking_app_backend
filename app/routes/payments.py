@@ -1,6 +1,7 @@
 from datetime import datetime
 
-from fastapi import APIRouter, HTTPException
+from fastapi import APIRouter, HTTPException, Depends
+from app.dependencies.auth import require_roles
 
 from app.core.database import (
     jobs_collection,
@@ -20,7 +21,10 @@ router = APIRouter(
 @router.post("/payment")
 async def record_payment(
     job_id: str,
-    payment: CreatePayment
+    payment: CreatePayment,
+    current_user=Depends(
+        require_roles("ADMIN", "RECEPTION")
+    )
 ):
 
     # Check job
